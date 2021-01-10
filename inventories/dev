@@ -1,5 +1,5 @@
 [app]
-srv1 ansible_host=192.168.33.10 ansible_user=vagrant ansible_become=true ansible_port=22 gui_name=gui1 gui_port=8080 config_file=config.json api_port=8000 api_name=api1
+srv1 ansible_host=192.168.33.10 ansible_user=vagrant ansible_become=true ansible_port=22 gui_name=gui1 gui_port=8082 config_file=config.json api_port=8000 api_name=api1
 srv2 ansible_host=192.168.33.10 ansible_user=vagrant ansible_become=true ansible_port=22 gui_name=gui2 gui_port=8081 config_file=config2.json api_port=8001 api_name=api2
 
 [lb]
