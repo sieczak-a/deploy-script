@@ -4,6 +4,15 @@ pipeline {
     COMMAND = "/opt/virtualenv/ansible/bin/ansible-playbook"
     INVENTORY = "inventories/dev"
     PLAYBOOK = "api-deploy.yml"
+    SKIP_TAGS = "--skip-tags=drain"
+  }
+
+  parameters {
+    choice (
+      name: 'EXTRA_PARAMS',
+      choices: ["", "--skip-tags=drain"],
+      description: 'Select skip draining nodes if deploy first time'
+    )
   }
 
   agent {
@@ -14,7 +23,7 @@ pipeline {
 
     stage('Deploy') {
       steps{
-        sh "$COMMAND $PLAYBOOK -i $INVENTORY"
+        sh "$COMMAND $PLAYBOOK -i $INVENTORY $EXTRA_PARAMS"
       }
     }
 
