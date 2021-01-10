@@ -13,6 +13,11 @@ pipeline {
       choices: ["", "--skip-tags=drain"],
       description: 'Select skip draining nodes if deploy first time'
     )
+    choice (
+      name: 'ENVIRONMENT',
+      choices: ["dev", "prd"],
+      description: 'Select environment'
+    )
   }
 
   agent {
@@ -23,7 +28,7 @@ pipeline {
 
     stage('Deploy') {
       steps{
-        sh "$COMMAND $PLAYBOOK -i $INVENTORY $EXTRA_PARAMS"
+        sh "$COMMAND $PLAYBOOK -i inventories/$ENVIRONMENT $EXTRA_PARAMS"
       }
     }
 
