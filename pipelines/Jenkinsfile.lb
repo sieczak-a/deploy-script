@@ -1,9 +1,9 @@
 pipeline {
 
   environment {
-    ansible-playbook = "/opt/virtualenv/ansible/bin/ansible-playbook"
-    inventory = "inventories/dev"
-    playbook = "lb-deploy.yml"
+    COMMAND = "/opt/virtualenv/ansible/bin/ansible-playbook"
+    INVENTORY = "inventories/dev"
+    PLAYBOOK = "lb-deploy.yml"
   }
 
   agent {
@@ -14,7 +14,7 @@ pipeline {
 
     stage('Deploy') {
       steps{
-        sh "$ansible-plaobook $playbook -i $inventory"
+        sh "$COMMAND $PLAYBOOK -i $INVENTORY"
       }
     }
 
