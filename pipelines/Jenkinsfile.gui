@@ -24,7 +24,7 @@ pipeline {
     stage('Deploy') {
       steps{
         ansiblePlaybook(
-          colorized: true,
+          colorized: false,
           credentialsId: 'vagrant-id',
           disableHostKeyChecking: true,
           installation: 'ansible210',
