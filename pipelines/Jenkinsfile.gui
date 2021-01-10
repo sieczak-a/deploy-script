@@ -19,7 +19,13 @@ pipeline {
           ls -l
           pwd
         '''
-        ansiblePlaybook colorized: true, credentialsId: 'vagrant-id', disableHostKeyChecking: true, installation: 'ansible210', inventory: 'inventories/dev', playbook: 'gui-deploy.yml'
+        ansiblePlaybook(
+          colorized: true,
+          credentialsId: 'vagrant-id',
+          disableHostKeyChecking: true,
+          installation: 'ansible210',
+          inventory: 'inventories/dev',
+          playbook: 'gui-deploy.yml')
       }
     }
 
