@@ -11,20 +11,24 @@ pipeline {
     label 'dockerhost-label'
   }
 
+  parameters {
+    choice (
+      name: 'ENVIRONMENT',
+      choices: ["dev", "prd"],
+      description: 'Select environment'
+    )
+  }
+
   stages {
 
     stage('Deploy') {
       steps{
-        sh '''
-          ls -l
-          pwd
-        '''
         ansiblePlaybook(
           colorized: true,
           credentialsId: 'vagrant-id',
           disableHostKeyChecking: true,
           installation: 'ansible210',
-          inventory: 'inventories/dev',
+          inventory: 'inventories/$ENVIRONMENT',
           playbook: 'gui-deploy.yml')
       }
     }
