@@ -17,7 +17,7 @@
     image: "{{ gui_image }}"
     state: started
     container_default_behavior: no_defaults
-    pull: no
+    pull: yes
     recreate: yes
     restart_policy: always
     labels:

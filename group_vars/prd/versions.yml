@@ -1,0 +1,3 @@
+---
+api_image: devopstestaccount/api:latest
+gui_image: devopstestaccount/gui:latest
