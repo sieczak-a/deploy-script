@@ -15,7 +15,7 @@ pipeline {
 
     stage('Deploy') {
       steps{
-      script {
+      // script {
         ansiColor('xterm') {
           ansiblePlaybook(
             installation: 'ansbile210',
@@ -24,7 +24,7 @@ pipeline {
             credentialsId: 'vagrant-id',
             colorized: true)
         }
-      }
+      // }
 
       }
     }
