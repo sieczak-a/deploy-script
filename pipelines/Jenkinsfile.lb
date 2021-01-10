@@ -1,0 +1,30 @@
+// AnsiColor and Ansible plugins required
+pipeline {
+  agent {
+    label 'dockerhost-label'
+  }
+
+  parameters {
+    choice (
+      name: 'ENVIRONMENT',
+      choices: ["dev", "prd"],
+      description: 'Select environment'
+    )
+  }
+
+  stages {
+
+    stage('Deploy') {
+      steps{
+        ansiblePlaybook(
+          colorized: false,
+          credentialsId: 'vagrant-id',
+          disableHostKeyChecking: true,
+          installation: 'ansible210',
+          inventory: 'inventories/$ENVIRONMENT',
+          playbook: 'lb-deploy.yml')
+      }
+    }
+
+  }
+}
