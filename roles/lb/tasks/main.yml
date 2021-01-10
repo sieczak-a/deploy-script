@@ -1,0 +1,37 @@
+---
+- name: Deploy rsyslog config
+  copy:
+    src: rsyslog.d/haproxy
+    dest: /etc/rsyslog.d/49-haproxy.conf
+    mode: '0644'
+  notify:
+    - restart rsyslog
+
+- name: create haproxy dir
+  file:
+    path: /srv/haproxy
+    state: directory
+    mode: '0755'
+
+- name: Copy haproxy.cfg
+  template:
+    src: haproxy.j2
+    dest: /srv/haproxy/haproxy.cfg
+    mode: '0644'
+
+- name: Launch HAProxy container
+  community.general.docker_container:
+    name: "lb"
+    image: "{{ lb_image }}"
+    container_default_behavior: no_defaults
+    state: started
+    pull: yes
+    recreate: yes
+    restart_policy: always
+    ports:
+      - "80:80"
+      - "1936:1936"
+    volumes:
+      - "/dev/log:/dev/log"
+      - "/var/run/:/var/run"
+      - "/srv/haproxy:/usr/local/etc/haproxy:ro"

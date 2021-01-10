@@ -1,0 +1,20 @@
+---
+- import_tasks: drain.yml
+
+- name: Launch API container
+  community.general.docker_container:
+    name: "{{ api_name }}"
+    image: "{{ api_image }}"
+    container_default_behavior: no_defaults
+    state: started
+    pull: no
+    recreate: yes
+    restart_policy: always
+    labels:
+      json_logger: "True"
+    ports:
+      - "{{ api_port }}:{{ api_port }}"
+    env:
+      PORT: "{{ api_port | string }}"
+
+- import_tasks: enable.yml

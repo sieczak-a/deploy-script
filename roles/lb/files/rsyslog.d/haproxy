@@ -1,0 +1,6 @@
+# change maximum line length to allow really long URI's to log properly
+$MaxMessageSize 20k
+
+# Send HAProxy messages to a dedicated logfile
+if $programname startswith 'haproxy' then /var/log/haproxy.log
+&~

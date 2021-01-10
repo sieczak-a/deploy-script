@@ -1,0 +1,7 @@
+---
+- name: filebeat container deploy
+  hosts: filebeat
+  gather_facts: true
+  become: yes
+  roles:
+    - role: filebeat

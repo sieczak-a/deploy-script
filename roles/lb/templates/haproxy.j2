@@ -1,0 +1,71 @@
+global
+    # log stdout format raw local0
+    log /dev/log local0
+    stats timeout 2m
+    stats socket /var/run/haproxy.sock mode 600 level admin
+    maxconn 8192
+    user nobody
+    group nogroup
+
+defaults
+    mode http
+    # https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4
+    option  http-server-close
+    log     global
+    option  dontlognull
+
+    # http://cbonte.github.io/haproxy-dconv/1.8/configuration.html#option%20redispatch
+    option  redispatch 1
+    retries 3
+    timeout http-request 15s
+
+    timeout http-keep-alive 300s
+    backlog 10000
+    timeout queue 30s
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+# Frontends
+frontend app
+    bind 0.0.0.0:80
+    option httplog
+
+    acl api path_beg /api
+    use_backend api if api
+    default_backend gui
+
+backend gui
+    balance roundrobin
+    # balance source
+    # balance leastconn
+    log global
+    option allbackups
+    option httpchk HEAD /index.html HTTP/1.0\r\nHost:\ anything
+    http-check expect status 200
+    http-response add-header X-App-Server %b/%s
+
+    {% for host in groups['frontend'] -%}
+    server {{ hostvars[host]['inventory_hostname'] }} {{ hostvars[host]['ansible_host'] }}:{{ hostvars[host]['gui_port'] }} check inter 5000 observe layer7
+    {% endfor %}
+
+backend api
+    balance roundrobin
+    # balance source
+    # balance leastconn
+    log global
+    option httpchk HEAD /api/info HTTP/1.0\r\nHost:\ anything
+    http-check expect status 200
+    http-response add-header X-App-Server %b/%s
+
+    {% for host in groups['backend'] -%}
+    server {{ hostvars[host]['inventory_hostname'] }} {{ hostvars[host]['ansible_host'] }}:{{ hostvars[host]['api_port'] }} check inter 5000 observe layer7
+    {% endfor %}
+
+listen stats
+    bind *:1936
+    stats enable
+    stats refresh 30s
+    stats auth admin:{{ lb_admin_password }}
+    stats admin if TRUE
+    stats uri /stats

@@ -1,0 +1,8 @@
+---
+gui_port: 8080
+gui_name: gui1
+gui_image: gui
+config_dir: /srv/gui
+config_file: config.json
+
+API_URL: http://192.168.33.10/api

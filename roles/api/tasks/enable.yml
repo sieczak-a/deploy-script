@@ -1,0 +1,10 @@
+---
+- name: enable backends
+  haproxy:
+    state: enabled
+    host: '{{ inventory_hostname }}'
+    socket: /var/run/haproxy.sock
+    backend: api
+    wait: yes
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['lb'] }}"

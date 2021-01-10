@@ -1,0 +1,8 @@
+---
+- name: api container deploy
+  hosts: backend
+  gather_facts: true
+  become: yes
+  serial: 1
+  roles:
+    - role: api
