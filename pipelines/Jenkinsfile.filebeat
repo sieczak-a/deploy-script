@@ -1,5 +1,5 @@
-// AnsiColor and Ansible plugins required
 pipeline {
+
   agent {
     label 'dockerhost-label'
   }
@@ -13,7 +13,6 @@ pipeline {
   }
 
   stages {
-
     stage('Deploy') {
       steps{
         ansiblePlaybook(
@@ -22,9 +21,8 @@ pipeline {
           disableHostKeyChecking: true,
           installation: 'ansible210',
           inventory: 'inventories/$ENVIRONMENT',
-          playbook: 'gui-deploy.yml')
+          playbook: 'filebeat-deploy.yml')
       }
     }
-
   }
 }
