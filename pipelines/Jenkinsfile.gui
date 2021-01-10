@@ -19,17 +19,7 @@ pipeline {
           ls -l
           pwd
         '''
-       script {
-        ansiColor('xterm') {
-          ansiblePlaybook(
-            installation: 'ansbile210',
-            playbook: 'gui-deploy.yml',
-            inventory: 'inventories/dev', 
-            credentialsId: 'vagrant-id',
-            colorized: true)
-        }
-       }
-
+        ansiblePlaybook colorized: true, credentialsId: 'vagrant-id', disableHostKeyChecking: true, installation: 'ansible210', inventory: 'inventories/dev', playbook: 'gui-deploy.yml'
       }
     }
 
