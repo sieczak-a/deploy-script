@@ -1,0 +1,22 @@
+pipeline {
+
+  environment {
+    COMMAND = "/opt/virtualenv/ansible/bin/ansible-playbook"
+    INVENTORY = "inventories/dev"
+    PLAYBOOK = "filebeat-deploy.yml"
+  }
+
+  agent {
+    label 'dockerhost-label'
+  }
+
+  stages {
+
+    stage('Deploy') {
+      steps{
+        sh "$COMMAND $PLAYBOOK -i $INVENTORY"
+      }
+    }
+
+  }
+}
