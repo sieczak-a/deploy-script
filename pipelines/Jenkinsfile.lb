@@ -1,0 +1,22 @@
+pipeline {
+
+  environment {
+    ansible-playbook = "/opt/virtualenv/ansible/bin/ansible-playbook"
+    inventory = "inventories/dev"
+    playbook = "lb-deploy.yml"
+  }
+
+  agent {
+    label 'dockerhost-label'
+  }
+
+  stages {
+
+    stage('Deploy') {
+      steps{
+        sh "$ansible-plaobook $playbook -i $inventory"
+      }
+    }
+
+  }
+}
