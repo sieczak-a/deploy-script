@@ -1,3 +1,4 @@
+// AnsiColor and Ansible plugins required
 pipeline {
 
   environment {
