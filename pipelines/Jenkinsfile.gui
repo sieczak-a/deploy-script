@@ -16,7 +16,10 @@ pipeline {
     stage('Deploy') {
       steps{
       // script {
-        sh 'ls -l'
+        sh '''
+          ls -l
+          pwd
+        '''
         ansiColor('xterm') {
           ansiblePlaybook(
             installation: 'ansbile210',
