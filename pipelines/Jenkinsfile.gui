@@ -16,6 +16,7 @@ pipeline {
     stage('Deploy') {
       steps{
       // script {
+        sh 'ls -l'
         ansiColor('xterm') {
           ansiblePlaybook(
             installation: 'ansbile210',
