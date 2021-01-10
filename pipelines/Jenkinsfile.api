@@ -2,21 +2,19 @@ pipeline {
 
   environment {
     COMMAND = "/opt/virtualenv/ansible/bin/ansible-playbook"
-    INVENTORY = "inventories/dev"
     PLAYBOOK = "api-deploy.yml"
-    SKIP_TAGS = "--skip-tags=drain"
   }
 
   parameters {
     choice (
-      name: 'EXTRA_PARAMS',
-      choices: ["", "--skip-tags=drain"],
-      description: 'Select skip draining nodes if deploy first time'
-    )
-    choice (
       name: 'ENVIRONMENT',
       choices: ["dev", "prd"],
       description: 'Select environment'
+    )
+    choice (
+      name: 'EXTRA_PARAMS',
+      choices: ["", "--skip-tags=drain"],
+      description: "If deploying service for first time select \'--skip-tags=drain\' other option"
     )
   }
 
