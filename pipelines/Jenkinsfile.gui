@@ -1,0 +1,30 @@
+pipeline {
+
+  environment {
+    COMMAND = "/opt/virtualenv/ansible/bin/ansible-playbook"
+    INVENTORY = "inventories/dev"
+    PLAYBOOK = "gui-deploy.yml"
+  }
+
+  agent {
+    label 'dockerhost-label'
+  }
+
+  stages {
+
+    stage('Deploy') {
+      steps{
+        ansiColor('xterm') {
+          ansiblePlaybook(
+            installation: 'ansbile210',
+            playbook: 'gui-deploy.yml',
+            inventory: 'inventories/dev', 
+            credentialsId: 'vagrant-id',
+            colorized: true)
+        }
+
+      }
+    }
+
+  }
+}
