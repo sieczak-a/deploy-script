@@ -37,7 +37,7 @@ frontend app
 
 # A backend section defines a group of servers that will be load balanced and assigned to handle requests
 backend gui
-    balance roundrobin     #  setting controls how HAProxy will select the server to respond to the request if no persistence method overrides that selection
+    balance roundrobins     #  setting controls how HAProxy will select the server to respond to the request if no persistence method overrides that selection
     # balance source
     # balance leastconn
     option httpchk HEAD /index.html HTTP/1.0\r\nHost:\ anything  # setting causes HAProxy to send Layer 7 (HTTP) health check
