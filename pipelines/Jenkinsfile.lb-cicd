@@ -1,0 +1,25 @@
+pipeline {
+
+  environment {
+    COMMAND = "/opt/virtualenv/ansible/bin/ansible-playbook"
+    PLAYBOOK = "lb_test_config.yml"
+  }
+
+  agent {
+    label 'dockerhost-label'
+  }
+
+  stages {
+
+    stage('Test') {
+      steps{
+        sh '''
+          $COMMAND $PLAYBOOK -i inventories/dev
+          cat $PWD/haproxy.cfg
+          docker run -i -v $PWD/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg --rm --name haproxy-syntax-check haproxy:2.3 haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+        '''
+      }
+    }
+
+  }
+}

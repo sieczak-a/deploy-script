@@ -1,0 +1,6 @@
+---
+- name: Copy haproxy.cfg
+  template:
+    src: haproxy.j2
+    dest: haproxy.cfg
+    mode: '0644'
