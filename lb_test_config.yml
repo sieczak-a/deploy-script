@@ -1,0 +1,9 @@
+---
+- name: testing config
+  connection: local
+  hosts: 127.0.0.1
+  tasks:
+    - name: create config
+      include_role:
+        name: lb
+        tasks_from: test_config
