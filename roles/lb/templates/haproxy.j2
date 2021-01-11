@@ -1,71 +1,63 @@
+# global define process-wide security and performance tunings that affect HAProxy at a low level
 global
-    # log stdout format raw local0
-    log /dev/log local0
-    stats timeout 2m
-    stats socket /var/run/haproxy.sock mode 600 level admin
-    maxconn 8192
-    user nobody
-    group nogroup
+    log /dev/log local0   # send all logs to /dev/log (rsyslog)
+    maxconn 8192          # by default limited to 10 concurrent connections
+    stats timeout 2m      # default
+    stats socket /var/run/haproxy.sock mode 600 level admin  # creates a UNIX socket at location.
+    user nobody          # changes process to nobody user
+    group nogroup        # changes process to nobody group
+
+# Using a defaults section will help reduce duplication.
+# Its settings apply to all of the frontend and backend sections that come after it.
+# You’re still free to override those settings within the sections that follow.
 
 defaults
-    mode http
-    # https://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4
-    option  http-server-close
-    log     global
-    option  dontlognull
+    mode http            # setting defines that HAproxy operates on HTTP mode insteaf of `mode tcp`
+    log global           # use same log settings as in global section
+    option redispatch 1  # Enable session redistribution in case of connection failure
+    retries 2            # Set the number of retries to perform on a server after a connection failure
+    maxconn 2000         # Fix the maximum number of concurrent connections on a frontend (defaults 2000)
+    timeout connect 5s  # setting configures the time that HAProxy will wait for a TCP connection to a backend server to be established
+    timeout client 30s   # setting measures inactivity during periods that we would expect the client to be speaking, or in other words sending TCP segments
+    timeout server 30s   # setting measures inactivity when we’d expect the backend server to be speaking. When a timeout expires, the connection is closed
 
-    # http://cbonte.github.io/haproxy-dconv/1.8/configuration.html#option%20redispatch
-    option  redispatch 1
-    retries 3
-    timeout http-request 15s
+# When you place HAProxy as a reverse proxy in front of your backend servers,                                                                                                # a frontend section defines the IP addresses and ports that clients can connect to.
+# You may add as many frontend sections as needed for exposing various websites to the Internet.
 
-    timeout http-keep-alive 300s
-    backlog 10000
-    timeout queue 30s
-    timeout connect 5000ms
-    timeout client 50000ms
-    timeout server 50000ms
-
-# Frontends
 frontend app
-    bind 0.0.0.0:80
-    option httplog
+    bind 0.0.0.0:80           # setting assigns a listener to a given IP address and port
+    option httplog            # use a more verbose log format when sending messages to Syslog
+    acl api path_beg /api     # declare access list
+    use_backend api if api    # setting chooses a backend pool of servers to respond to incoming requests if a given condition is true
+    default_backend gui       # the name of a backend to send traffic to if a use_backend rule doesn’t send it elsewhere first
 
-    acl api path_beg /api
-    use_backend api if api
-    default_backend gui
 
+# A backend section defines a group of servers that will be load balanced and assigned to handle requests
 backend gui
-    balance roundrobin
+    balance roundrobin     #  setting controls how HAProxy will select the server to respond to the request if no persistence method overrides that selection
     # balance source
     # balance leastconn
-    log global
-    option allbackups
-    option httpchk HEAD /index.html HTTP/1.0\r\nHost:\ anything
-    http-check expect status 200
-    http-response add-header X-App-Server %b/%s
-
+    option httpchk HEAD /index.html HTTP/1.0\r\nHost:\ anything  # setting causes HAProxy to send Layer 7 (HTTP) health check
+    http-check expect status 200                                 # health check expected response
+    http-response add-header X-App-Server %b/%s                  # adding header to response which is send to client
+    # The server setting is the heart of the backend.
+    # Its first argument is a name, followed by the IP address and port of the backend server.
     {% for host in groups['frontend'] -%}
     server {{ hostvars[host]['inventory_hostname'] }} {{ hostvars[host]['ansible_host'] }}:{{ hostvars[host]['gui_port'] }} check inter 5000 observe layer7
     {% endfor %}
 
 backend api
-    balance roundrobin
-    # balance source
-    # balance leastconn
-    log global
     option httpchk HEAD /api/info HTTP/1.0\r\nHost:\ anything
     http-check expect status 200
     http-response add-header X-App-Server %b/%s
-
     {% for host in groups['backend'] -%}
-    server {{ hostvars[host]['inventory_hostname'] }} {{ hostvars[host]['ansible_host'] }}:{{ hostvars[host]['api_port'] }} check inter 5000 observe layer7
+    server {{ hostvars[host]['inventory_hostname'] }} {{ hostvars[host]['ansible_host'] }}:{{ hostvars[host]['api_port'] }} check inter 1000 observe layer7
     {% endfor %}
 
 listen stats
-    bind *:1936
-    stats enable
-    stats refresh 30s
-    stats auth admin:{{ lb_admin_password }}
-    stats admin if TRUE
-    stats uri /stats
+    bind *:1936             # statistics panel available on port 1936/TCP
+    stats enable            # Enable statistics reporting with default settings
+    stats refresh 5s        # Enable statistics with automatic refresh
+    stats auth admin:{{ lb_admin_password }}  # Enable statistics with authentication and grant access to an account
+    stats admin if TRUE     # statistics admin level always enabled because of the authentication
+    stats uri /stats        # stats available on uri e.g. http://localhost:1936/stats
