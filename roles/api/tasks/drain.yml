@@ -1,4 +1,7 @@
 ---
+#  This will turn the server's administrative state to the
+#  DRAIN mode, thus it will not accept any new connections other than those
+#  that are accepted via persistence.
 - name: disable backend
   haproxy:
     state: drain
@@ -8,3 +11,7 @@
     wait: yes
   delegate_to: "{{ item }}"
   with_items: "{{ groups['lb'] }}"
+
+- name: Pause for 30 seconds to stop all connections
+  pause:
+    seconds: 30
