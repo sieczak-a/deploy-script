@@ -20,6 +20,9 @@ defaults
     timeout connect 5s  # setting configures the time that HAProxy will wait for a TCP connection to a backend server to be established
     timeout client 30s   # setting measures inactivity during periods that we would expect the client to be speaking, or in other words sending TCP segments
     timeout server 30s   # setting measures inactivity when we’d expect the backend server to be speaking. When a timeout expires, the connection is closed
+    timeout http-request 5s # Set the maximum allowed time to wait for a complete HTTP request
+    timeout http-keep-alive 20s # Set the maximum allowed time to wait for a new HTTP request to appear
+
 
 # When you place HAProxy as a reverse proxy in front of your backend servers,                                                                                                # a frontend section defines the IP addresses and ports that clients can connect to.
 # You may add as many frontend sections as needed for exposing various websites to the Internet.
