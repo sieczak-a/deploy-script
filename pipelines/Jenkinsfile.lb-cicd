@@ -16,7 +16,7 @@ pipeline {
         sh '''
           $COMMAND $PLAYBOOK -i inventories/dev
           cat $PWD/haproxy.cfg
-          docker run -it -v $PWD/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg --rm --name haproxy-syntax-check haproxy:2.3 haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+          docker run -i -v $PWD/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg --rm --name haproxy-syntax-check haproxy:2.3 haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
         '''
       }
     }
