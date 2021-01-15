@@ -1,3 +1,3 @@
 ---
-api_image: devopstestaccount/api:latest
-gui_image: devopstestaccount/gui:latest
+api_image: truegunner/api:latest
+gui_image: truegunner/gui:latest

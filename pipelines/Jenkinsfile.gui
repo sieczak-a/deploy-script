@@ -18,7 +18,7 @@ pipeline {
       steps{
         ansiblePlaybook(
           colorized: false,
-          credentialsId: 'vagrant-id',
+          credentialsId: 'nickfury-id',
           disableHostKeyChecking: true,
           installation: 'ansible210',
           inventory: 'inventories/$ENVIRONMENT',
